@@ -96,7 +96,7 @@ func main() {
 	defer properties.Release()
 
 	// 获取设备友好名称
-	if propVar, err = properties.GetValue(com.PKEY_Device_FriendlyName); err != nil {
+	if propVar, err = properties.GetValue(com.PKEY_Device_FriendlyName()); err != nil {
 		panic(err)
 	}
 
