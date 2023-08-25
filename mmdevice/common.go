@@ -1,6 +1,10 @@
 package mmdevice
 
-import "golang.org/x/sys/windows"
+import (
+	"unsafe"
+
+	"golang.org/x/sys/windows"
+)
 
 // DECLSPEC_UUID("BCDE0395-E52F-467C-8E3D-C4579291692E")
 var _CLSID_MMDeviceEnumerator = windows.GUID{Data1: 0xBCDE0395, Data2: 0xE52F, Data3: 0x467C, Data4: [8]byte{0x8E, 0x3D, 0xC4, 0x57, 0x92, 0x91, 0x69, 0x2E}}
@@ -51,3 +55,7 @@ const (
 	UnknownFormFactor
 	EndpointFormFactor_enum_count
 )
+
+func ToType[T IMMDevice | IMMDeviceCollection | IMMDeviceEnumerator | IMMEndpoint | IMMNotificationClient](v unsafe.Pointer) *T {
+	return (*T)(v)
+}

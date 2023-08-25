@@ -59,7 +59,7 @@ func main() {
 	if v, err = com.CoCreateInstance(&CLSID_MMDeviceEnumerator, nil, CLSCTX_ALL, &IID_IMMDeviceEnumerator); err != nil {
 		panic(err)
 	}
-	enumerator = (*mmdevice.IMMDeviceEnumerator)(v)
+	enumerator = mmdevice.ToType[mmdevice.IMMDeviceEnumerator](v)
 	defer enumerator.Release()
 
 	// 枚举音频端点设备
@@ -106,7 +106,7 @@ func main() {
 	if v, err = device.Activate(audioclient.IID_IAudioClient(), CLSCTX_ALL, nil); err != nil {
 		panic(err)
 	}
-	audioClient = (*audioclient.IAudioClient)(v)
+	audioClient = audioclient.ToType[audioclient.IAudioClient](v)
 	defer audioClient.Release()
 
 	// 获取设备格式
@@ -135,7 +135,7 @@ func main() {
 	if v, err = audioClient.GetService(&IID_IAudioCaptureClient); err != nil {
 		panic(err)
 	}
-	captureClient = (*audioclient.IAudioCaptureClient)(v)
+	captureClient = audioclient.ToType[audioclient.IAudioCaptureClient](v)
 	defer captureClient.Release()
 
 	// 计算实际的采样时间

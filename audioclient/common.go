@@ -440,3 +440,7 @@ const (
 	AudioCategory_UniformSpeech
 	AudioCategory_VoiceTyping
 )
+
+func ToType[T IAudioClient | IAudioCaptureClient | IAudioRenderClient](v unsafe.Pointer) *T {
+	return (*T)(v)
+}
