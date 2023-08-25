@@ -10,10 +10,10 @@ import (
 	"syscall"
 	"time"
 	"unsafe"
-	"wasapi/audioclient"
-	"wasapi/com"
-	"wasapi/mmdevice"
 
+	"github.com/xray-bit/wasapi/audioclient"
+	"github.com/xray-bit/wasapi/com"
+	"github.com/xray-bit/wasapi/mmdevice"
 	"golang.org/x/sys/windows"
 )
 

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"syscall"
 	"unsafe"
-	"wasapi/com"
 
+	"github.com/xray-bit/wasapi/com"
 	"golang.org/x/sys/windows"
 )
 

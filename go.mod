@@ -1,4 +1,4 @@
-module wasapi
+module github.com/xray-bit/wasapi
 
 go 1.21.0
 
