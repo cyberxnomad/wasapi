@@ -9,52 +9,14 @@ import (
 )
 
 var (
-	mod_ole32            = windows.NewLazyDLL("ole32.dll")
-	procCoCreateInstance = mod_ole32.NewProc("CoCreateInstance")
-	procCoInitializeEx   = mod_ole32.NewProc("CoInitializeEx")
-	procCoUninitialize   = mod_ole32.NewProc("CoUninitialize")
-	procCoTaskMemFree    = mod_ole32.NewProc("CoTaskMemFree")
+	modole32             = windows.NewLazyDLL("ole32.dll")
+	procCoCreateInstance = modole32.NewProc("CoCreateInstance")
+	procCoInitializeEx   = modole32.NewProc("CoInitializeEx")
+	procCoUninitialize   = modole32.NewProc("CoUninitialize")
+	procCoTaskMemFree    = modole32.NewProc("CoTaskMemFree")
 )
 
 type HRESULT = uint32
-
-type _PROPVARIANT_Union struct {
-	Union [2]uint64
-}
-
-func (self *_PROPVARIANT_Union) PwszVal() *uint16 {
-	return *(**uint16)(unsafe.Pointer(self))
-}
-
-type PROPVARIANT struct {
-	Vt         uint16 // Value type tag.
-	WReserved1 uint16
-	WReserved2 uint16
-	WReserved3 uint16
-	_PROPVARIANT_Union
-}
-
-type PROPERTYKEY struct {
-	Fmtid windows.GUID
-	Pid   uint32
-}
-
-// MIDL_INTERFACE("00000000-0000-0000-C000-000000000046")
-var _IID_IUnknown = windows.GUID{Data1: 0x00000000, Data2: 0x0000, Data3: 0x0000, Data4: [8]byte{0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46}}
-
-func IID_IUnknown() windows.GUID {
-	return _IID_IUnknown
-}
-
-type IUnknown struct {
-	vtbl *IUnknownVtbl
-}
-
-type IUnknownVtbl struct {
-	QueryInterface uintptr
-	AddRef         uintptr
-	Release        uintptr
-}
 
 // 初始化 COM 库以供调用线程使用，设置线程的并发模型，并根据需要为线程创建一个新单元。
 func CoInitializeEx(reserved uintptr, coInitFlag uint32) (err error) {
@@ -88,7 +50,7 @@ func CoCreateInstance(
 	clsContext uint32,
 	iid *windows.GUID,
 ) (v unsafe.Pointer, err error) {
-	r, _, _ := procCoCreateInstance.Call(
+	r, _, _ := syscall.SyscallN(procCoCreateInstance.Addr(),
 		uintptr(unsafe.Pointer(clsid)),
 		uintptr(unsafe.Pointer(unkOuter)),
 		uintptr(clsContext),
