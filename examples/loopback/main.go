@@ -100,7 +100,7 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("Device[0] Name:", windows.UTF16PtrToString(propVar.PwszVal()))
+	fmt.Println("Device[0] Name:", propVar.PwszValString())
 
 	// 创建音频客户端实例
 	if v, err = device.Activate(audioclient.IID_IAudioClient(), CLSCTX_ALL, nil); err != nil {
