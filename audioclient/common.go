@@ -441,6 +441,6 @@ const (
 	AudioCategory_VoiceTyping
 )
 
-func ToType[T IAudioClient | IAudioCaptureClient | IAudioRenderClient](v unsafe.Pointer) *T {
+func ToType[T IAudioCaptureClient | IAudioClient | IAudioClock | IAudioRenderClient | IAudioStreamVolume | IChannelAudioVolume | ISimpleAudioVolume](v unsafe.Pointer) *T {
 	return (*T)(v)
 }
