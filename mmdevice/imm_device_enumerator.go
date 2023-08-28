@@ -75,7 +75,11 @@ func (self *IMMDeviceEnumerator) GetDefaultAudioEndpoint(dataFlow EDataFlow, rol
 
 // GetDevice 方法检索由终结点 ID 字符串标识的音频终结点设备。
 func (self *IMMDeviceEnumerator) GetDevice(id string) (device *IMMDevice, err error) {
-	utf16ptr := windows.StringToUTF16Ptr(id)
+	var utf16ptr *uint16
+
+	if utf16ptr, err = windows.UTF16PtrFromString(id); err != nil {
+		return
+	}
 
 	r, _, _ := syscall.SyscallN(self.vtbl.GetDevice, uintptr(unsafe.Pointer(self)),
 		uintptr(unsafe.Pointer(utf16ptr)),

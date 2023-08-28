@@ -43,7 +43,12 @@ func (self *IMMNotificationClient) Release() (err error) {
 
 // OnDefaultDeviceChanged 方法通知客户端特定设备的默认音频终结点设备已更改。
 func (self *IMMNotificationClient) OnDefaultDeviceChanged(flow EDataFlow, role ERole, defaultDeviceId string) (err error) {
-	utf16ptr := windows.StringToUTF16Ptr(defaultDeviceId)
+	var utf16ptr *uint16
+
+	if utf16ptr, err = windows.UTF16PtrFromString(defaultDeviceId); err != nil {
+		return
+	}
+
 	r, _, _ := syscall.SyscallN(self.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(self)),
 		uintptr(flow),
 		uintptr(role),
@@ -61,7 +66,12 @@ func (self *IMMNotificationClient) OnDefaultDeviceChanged(flow EDataFlow, role E
 
 // OnDeviceAdded 方法指示已添加新的音频终结点设备。
 func (self *IMMNotificationClient) OnDeviceAdded(deviceId string) (err error) {
-	utf16ptr := windows.StringToUTF16Ptr(deviceId)
+	var utf16ptr *uint16
+
+	if utf16ptr, err = windows.UTF16PtrFromString(deviceId); err != nil {
+		return
+	}
+
 	r, _, _ := syscall.SyscallN(self.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(self)),
 		uintptr(unsafe.Pointer(utf16ptr)),
 	)
@@ -77,7 +87,12 @@ func (self *IMMNotificationClient) OnDeviceAdded(deviceId string) (err error) {
 
 // OnDeviceRemoved 方法指示已删除音频终结点设备。
 func (self *IMMNotificationClient) OnDeviceRemoved(deviceId string) (err error) {
-	utf16ptr := windows.StringToUTF16Ptr(deviceId)
+	var utf16ptr *uint16
+
+	if utf16ptr, err = windows.UTF16PtrFromString(deviceId); err != nil {
+		return
+	}
+
 	r, _, _ := syscall.SyscallN(self.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(self)),
 		uintptr(unsafe.Pointer(utf16ptr)),
 	)
@@ -93,7 +108,12 @@ func (self *IMMNotificationClient) OnDeviceRemoved(deviceId string) (err error) 
 
 // OnDeviceStateChanged 方法指示音频终结点设备的状态已更改。
 func (self *IMMNotificationClient) OnDeviceStateChanged(deviceId string, newState uint32) (err error) {
-	utf16ptr := windows.StringToUTF16Ptr(deviceId)
+	var utf16ptr *uint16
+
+	if utf16ptr, err = windows.UTF16PtrFromString(deviceId); err != nil {
+		return
+	}
+
 	r, _, _ := syscall.SyscallN(self.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(self)),
 		uintptr(unsafe.Pointer(utf16ptr)),
 		uintptr(newState),
@@ -110,7 +130,12 @@ func (self *IMMNotificationClient) OnDeviceStateChanged(deviceId string, newStat
 
 // OnPropertyValueChanged 方法指示属于音频终结点设备的属性的值已更改。
 func (self *IMMNotificationClient) OnPropertyValueChanged(deviceId string, key com.PROPERTYKEY) (err error) {
-	utf16ptr := windows.StringToUTF16Ptr(deviceId)
+	var utf16ptr *uint16
+
+	if utf16ptr, err = windows.UTF16PtrFromString(deviceId); err != nil {
+		return
+	}
+
 	r, _, _ := syscall.SyscallN(self.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(self)),
 		uintptr(unsafe.Pointer(utf16ptr)),
 		uintptr(unsafe.Pointer(&key)),
