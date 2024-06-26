@@ -2,6 +2,7 @@ package audioclient
 
 import (
 	"encoding/binary"
+	"errors"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
@@ -15,115 +16,111 @@ const (
 )
 
 type WAVEFORMATEX struct {
-	// FormatTag      uint16
-	// Channels       uint16
-	// SamplesPerSec  uint32
-	// AvgBytesPerSec uint32
-	// BlockAlign     uint16
-	// BitsPerSample  uint16
-	// CbSize         uint16
-	mem [18]byte
+	FormatTag      uint16
+	Channels       uint16
+	SamplesPerSec  uint32
+	AvgBytesPerSec uint32
+	BlockAlign     uint16
+	BitsPerSample  uint16
+	CbSize         uint16
 }
 
-func (self *WAVEFORMATEX) FormatTag() uint16 {
-	return binary.LittleEndian.Uint16(self.mem[0:2])
+// encode WAVEFORMATEX to bytes
+func (f *WAVEFORMATEX) toBytes() (buf []byte) {
+	buf = make([]byte, 18)
+
+	// FormatTag
+	binary.LittleEndian.PutUint16(buf[0:2], f.FormatTag)
+	// Channels
+	binary.LittleEndian.PutUint16(buf[2:4], f.Channels)
+	// SamplesPerSec
+	binary.LittleEndian.PutUint32(buf[4:8], f.SamplesPerSec)
+	// AvgBytesPerSec
+	binary.LittleEndian.PutUint32(buf[8:12], f.AvgBytesPerSec)
+	// BlockAlign
+	binary.LittleEndian.PutUint16(buf[12:14], f.BlockAlign)
+	// BitsPerSample
+	binary.LittleEndian.PutUint16(buf[14:16], f.BitsPerSample)
+	// CbSize
+	binary.LittleEndian.PutUint16(buf[16:18], f.CbSize)
+
+	return
 }
 
-func (self *WAVEFORMATEX) SetFormatTag(v uint16) {
-	binary.LittleEndian.PutUint16(self.mem[0:2], v)
-}
+// decode bytes to WAVEFORMATEX
+//
+// note: length of buf must be 18
+func (f *WAVEFORMATEX) fromBytes(buf []byte) (err error) {
+	if len(buf) != 18 {
+		err = errors.New("invalid length")
+		return
+	}
 
-func (self *WAVEFORMATEX) Channels() uint16 {
-	return binary.LittleEndian.Uint16(self.mem[2:4])
-}
+	f.FormatTag = binary.LittleEndian.Uint16(buf[0:2])
+	f.Channels = binary.LittleEndian.Uint16(buf[2:4])
+	f.SamplesPerSec = binary.LittleEndian.Uint32(buf[4:8])
+	f.AvgBytesPerSec = binary.LittleEndian.Uint32(buf[8:12])
+	f.BlockAlign = binary.LittleEndian.Uint16(buf[12:14])
+	f.BitsPerSample = binary.LittleEndian.Uint16(buf[14:16])
+	f.CbSize = binary.LittleEndian.Uint16(buf[16:18])
 
-func (self *WAVEFORMATEX) SetChannels(v uint16) {
-	binary.LittleEndian.PutUint16(self.mem[2:4], v)
-}
-
-func (self *WAVEFORMATEX) SamplesPerSec() uint32 {
-	return binary.LittleEndian.Uint32(self.mem[4:8])
-}
-
-func (self *WAVEFORMATEX) SetSamplesPerSec(v uint32) {
-	binary.LittleEndian.PutUint32(self.mem[4:8], v)
-}
-
-func (self *WAVEFORMATEX) AvgBytesPerSec() uint32 {
-	return binary.LittleEndian.Uint32(self.mem[8:12])
-}
-
-func (self *WAVEFORMATEX) SetAvgBytesPerSec(v uint32) {
-	binary.LittleEndian.PutUint32(self.mem[8:12], v)
-}
-
-func (self *WAVEFORMATEX) BlockAlign() uint16 {
-	return binary.LittleEndian.Uint16(self.mem[12:14])
-}
-
-func (self *WAVEFORMATEX) SetBlockAlign(v uint16) {
-	binary.LittleEndian.PutUint16(self.mem[12:14], v)
-}
-
-func (self *WAVEFORMATEX) BitsPerSample() uint16 {
-	return binary.LittleEndian.Uint16(self.mem[14:16])
-}
-
-func (self *WAVEFORMATEX) SetBitsPerSample(v uint16) {
-	binary.LittleEndian.PutUint16(self.mem[14:16], v)
-}
-
-func (self *WAVEFORMATEX) CbSize() uint16 {
-	return binary.LittleEndian.Uint16(self.mem[16:18])
-}
-
-func (self *WAVEFORMATEX) SetCbSize(v uint16) {
-	binary.LittleEndian.PutUint16(self.mem[16:18], v)
+	return
 }
 
 type WAVEFORMATEXTENSIBLE struct {
-	// Format      WAVEFORMATEX
-	// Samples     uint16
-	// ChannelMask uint32
-	// SubFormat   windows.GUID
-	mem [40]byte
+	Format      WAVEFORMATEX
+	Samples     uint16
+	ChannelMask uint32
+	SubFormat   windows.GUID
 }
 
-func (self *WAVEFORMATEXTENSIBLE) Format() *WAVEFORMATEX {
-	return (*WAVEFORMATEX)(unsafe.Pointer(&self.mem[0]))
+// encode WAVEFORMATEXTENSIBLE to bytes
+func (f *WAVEFORMATEXTENSIBLE) toBytes() (buf []byte) {
+	buf = make([]byte, 40)
+
+	// Format
+	copy(buf, f.Format.toBytes())
+	// Samples
+	binary.LittleEndian.PutUint16(buf[18:20], f.Samples)
+	// ChannelMask
+	binary.LittleEndian.PutUint32(buf[20:24], f.ChannelMask)
+	// SubFormat
+	binary.LittleEndian.PutUint32(buf[24:28], f.SubFormat.Data1)
+	binary.LittleEndian.PutUint16(buf[28:30], f.SubFormat.Data2)
+	binary.LittleEndian.PutUint16(buf[30:32], f.SubFormat.Data3)
+	copy(buf[32:], f.SubFormat.Data4[:])
+
+	return
 }
 
-func (self *WAVEFORMATEXTENSIBLE) SetFormat(v WAVEFORMATEX) {
-	copy(self.mem[:18], v.mem[:])
+// decode bytes to WAVEFORMATEXTENSIBLE
+//
+// note: length of buf must be 40
+func (f *WAVEFORMATEXTENSIBLE) fromBytes(buf []byte) (err error) {
+	if len(buf) != 40 {
+		err = errors.New("invalid length")
+		return
+	}
+
+	err = f.Format.fromBytes(buf[:18])
+	if err != nil {
+		return
+	}
+
+	if f.Format.CbSize >= 22 {
+		f.Samples = binary.LittleEndian.Uint16(buf[18:20])
+		f.ChannelMask = binary.LittleEndian.Uint32(buf[20:24])
+		f.SubFormat.Data1 = binary.LittleEndian.Uint32(buf[24:28])
+		f.SubFormat.Data2 = binary.LittleEndian.Uint16(buf[28:30])
+		f.SubFormat.Data3 = binary.LittleEndian.Uint16(buf[30:32])
+		copy(f.SubFormat.Data4[:], buf[32:])
+	}
+
+	return
 }
 
-func (self *WAVEFORMATEXTENSIBLE) Samples() uint16 {
-	return binary.LittleEndian.Uint16(self.mem[18:20])
-}
-
-func (self *WAVEFORMATEXTENSIBLE) SetSamples(v uint16) {
-	binary.LittleEndian.PutUint16(self.mem[18:20], v)
-}
-
-func (self *WAVEFORMATEXTENSIBLE) ChannelMask() uint32 {
-	return binary.LittleEndian.Uint32(self.mem[20:24])
-}
-
-func (self *WAVEFORMATEXTENSIBLE) SetChannelMask(v uint32) {
-	binary.LittleEndian.PutUint32(self.mem[20:24], v)
-}
-
-func (self *WAVEFORMATEXTENSIBLE) SubFormat() windows.GUID {
-	return *(*windows.GUID)(unsafe.Pointer(&self.mem[24]))
-}
-
-func (self *WAVEFORMATEXTENSIBLE) SetSubFormat(v windows.GUID) {
-	guid := *(*[unsafe.Sizeof(v)]byte)(unsafe.Pointer(&v))
-	copy(self.mem[24:], guid[:])
-}
-
-func (self *WAVEFORMATEXTENSIBLE) SubFormatTag() uint16 {
-	return uint16(self.SubFormat().Data1)
+func (f *WAVEFORMATEXTENSIBLE) SubFormatTag() uint16 {
+	return uint16(f.SubFormat.Data1)
 }
 
 // WAVE form wFormatTag IDs

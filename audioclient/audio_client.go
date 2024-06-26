@@ -56,12 +56,13 @@ func (self *IAudioClient) Initialize(
 	format *WAVEFORMATEXTENSIBLE,
 	audioSessionGuid *windows.GUID,
 ) (err error) {
+	formatBuf := format.toBytes()
 	r, _, _ := syscall.SyscallN(self.vtbl.Initialize, uintptr(unsafe.Pointer(self)),
 		uintptr(shareMode),
 		uintptr(streamFlags),
 		uintptr(hnsBufferDuration),
 		uintptr(hnsPeriodicity),
-		uintptr(unsafe.Pointer(format)),
+		uintptr(unsafe.Pointer(&formatBuf[0])),
 		uintptr(unsafe.Pointer(audioSessionGuid)),
 	)
 
@@ -116,11 +117,18 @@ func (self *IAudioClient) GetCurrentPadding() (numPaddingFrames uint32, err erro
 }
 
 // IsFormatSupported 方法指示音频终结点设备是否支持特定的流格式。
-func (self *IAudioClient) IsFormatSupported(shareMode AUDCLNT_SHAREMODE, format *WAVEFORMATEX) (closestMatch *WAVEFORMATEX, err error) {
+func (self *IAudioClient) IsFormatSupported(shareMode AUDCLNT_SHAREMODE, format *WAVEFORMATEXTENSIBLE) (closestMatch WAVEFORMATEXTENSIBLE, err error) {
+	var (
+		closestMatchPtr *byte
+		formatBuf       []byte
+	)
+
+	formatBuf = format.toBytes()
+
 	r, _, _ := syscall.SyscallN(self.vtbl.IsFormatSupported, uintptr(unsafe.Pointer(self)),
 		uintptr(shareMode),
-		uintptr(unsafe.Pointer(&format)),
-		uintptr(unsafe.Pointer(&closestMatch)),
+		uintptr(unsafe.Pointer(&formatBuf[0])),
+		uintptr(unsafe.Pointer(&closestMatchPtr)),
 	)
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
@@ -128,19 +136,34 @@ func (self *IAudioClient) IsFormatSupported(shareMode AUDCLNT_SHAREMODE, format 
 		return
 	}
 
+	if shareMode == AUDCLNT_SHAREMODE_SHARED {
+		buf := unsafe.Slice(closestMatchPtr, 40)
+		closestMatch.fromBytes(buf)
+
+		// 释放内存
+		com.CoTaskMemFree(unsafe.Pointer(closestMatchPtr))
+	}
+
 	return
 }
 
 // GetMixFormat 方法检索音频引擎用于内部处理共享模式流的流格式。
-func (self *IAudioClient) GetMixFormat() (deviceFormat *WAVEFORMATEXTENSIBLE, err error) {
+func (self *IAudioClient) GetMixFormat() (deviceFormat WAVEFORMATEXTENSIBLE, err error) {
+	var formatPtr *byte
 	r, _, _ := syscall.SyscallN(self.vtbl.GetMixFormat, uintptr(unsafe.Pointer(self)),
-		uintptr(unsafe.Pointer(&deviceFormat)),
+		uintptr(unsafe.Pointer(&formatPtr)),
 	)
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IAudioClient::GetMixFormat failed with code: 0x%08X", com.HRESULT(r))
 		return
 	}
+
+	buf := unsafe.Slice(formatPtr, 40)
+	deviceFormat.fromBytes(buf)
+
+	// 释放内存
+	com.CoTaskMemFree(unsafe.Pointer(formatPtr))
 
 	return
 }
