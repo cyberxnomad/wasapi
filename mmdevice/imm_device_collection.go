@@ -26,8 +26,8 @@ type _IMMDeviceCollectionVtbl struct {
 	Item     uintptr
 }
 
-func (self *IMMDeviceCollection) Release() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Release, uintptr(unsafe.Pointer(self)))
+func (collection *IMMDeviceCollection) Release() (err error) {
+	r, _, _ := syscall.SyscallN(collection.vtbl.Release, uintptr(unsafe.Pointer(collection)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IMMDeviceCollection::Release failed with code: 0x%08X", com.HRESULT(r))
@@ -38,8 +38,8 @@ func (self *IMMDeviceCollection) Release() (err error) {
 }
 
 // GetCount 方法检索设备集合中的设备计数。
-func (self *IMMDeviceCollection) GetCount() (pcDevices uint, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetCount, uintptr(unsafe.Pointer(self)),
+func (collection *IMMDeviceCollection) GetCount() (pcDevices uint, err error) {
+	r, _, _ := syscall.SyscallN(collection.vtbl.GetCount, uintptr(unsafe.Pointer(collection)),
 		uintptr(unsafe.Pointer(&pcDevices)),
 	)
 
@@ -53,8 +53,8 @@ func (self *IMMDeviceCollection) GetCount() (pcDevices uint, err error) {
 
 // Item 方法检索指向设备集合中指定项的指针。
 // 不需要时需主动调用 Release 方法。
-func (self *IMMDeviceCollection) Item(nDevice uint32) (device *IMMDevice, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Item, uintptr(unsafe.Pointer(self)),
+func (collection *IMMDeviceCollection) Item(nDevice uint32) (device *IMMDevice, err error) {
+	r, _, _ := syscall.SyscallN(collection.vtbl.Item, uintptr(unsafe.Pointer(collection)),
 		uintptr(nDevice),
 		uintptr(unsafe.Pointer(&device)),
 	)

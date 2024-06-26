@@ -27,8 +27,8 @@ type _IAudioRenderClientVtbl struct {
 	GetNextPacketSize uintptr
 }
 
-func (self *IAudioRenderClient) Release() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Release, uintptr(unsafe.Pointer(self)))
+func (client *IAudioRenderClient) Release() (err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.Release, uintptr(unsafe.Pointer(client)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IAudioRenderClient::Release failed with code: 0x%08X", com.HRESULT(r))
@@ -39,9 +39,9 @@ func (self *IAudioRenderClient) Release() (err error) {
 }
 
 // 检索指向呈现终结点缓冲区中下一个可用空间的指针，调用方可以在其中写入数据包。
-func (self *IAudioRenderClient) GetBuffer(numFramesRequested uint32) (data []byte, err error) {
+func (client *IAudioRenderClient) GetBuffer(numFramesRequested uint32) (data []byte, err error) {
 	var buf *uint8
-	r, _, _ := syscall.SyscallN(self.vtbl.GetBuffer, uintptr(unsafe.Pointer(self)),
+	r, _, _ := syscall.SyscallN(client.vtbl.GetBuffer, uintptr(unsafe.Pointer(client)),
 		uintptr(numFramesRequested),
 		uintptr(unsafe.Pointer(&buf)),
 	)
@@ -57,8 +57,8 @@ func (self *IAudioRenderClient) GetBuffer(numFramesRequested uint32) (data []byt
 }
 
 // ReleaseBuffer 方法释放在对 IAudioRenderClient::GetBuffer 方法的上一次调用中获取的缓冲区空间。
-func (self *IAudioRenderClient) ReleaseBuffer(numFramesWritten uint32, flags uint32) (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.ReleaseBuffer, uintptr(unsafe.Pointer(self)),
+func (client *IAudioRenderClient) ReleaseBuffer(numFramesWritten uint32, flags uint32) (err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.ReleaseBuffer, uintptr(unsafe.Pointer(client)),
 		uintptr(numFramesWritten),
 		uintptr(flags),
 	)

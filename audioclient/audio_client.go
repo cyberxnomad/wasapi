@@ -36,8 +36,8 @@ type _IAudioClientVtbl struct {
 	GetService        uintptr
 }
 
-func (self *IAudioClient) Release() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Release, uintptr(unsafe.Pointer(self)))
+func (client *IAudioClient) Release() (err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.Release, uintptr(unsafe.Pointer(client)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IAudioClient::Release failed with code: 0x%08X", com.HRESULT(r))
@@ -48,7 +48,7 @@ func (self *IAudioClient) Release() (err error) {
 }
 
 // Initialize 方法初始化音频流。
-func (self *IAudioClient) Initialize(
+func (client *IAudioClient) Initialize(
 	shareMode AUDCLNT_SHAREMODE,
 	streamFlags uint32,
 	hnsBufferDuration uint64,
@@ -57,7 +57,7 @@ func (self *IAudioClient) Initialize(
 	audioSessionGuid *windows.GUID,
 ) (err error) {
 	formatBuf := format.toBytes()
-	r, _, _ := syscall.SyscallN(self.vtbl.Initialize, uintptr(unsafe.Pointer(self)),
+	r, _, _ := syscall.SyscallN(client.vtbl.Initialize, uintptr(unsafe.Pointer(client)),
 		uintptr(shareMode),
 		uintptr(streamFlags),
 		uintptr(hnsBufferDuration),
@@ -75,8 +75,8 @@ func (self *IAudioClient) Initialize(
 }
 
 // GetBufferSize 方法检索终结点缓冲区的大小 (最大容量) 。
-func (self *IAudioClient) GetBufferSize() (numBufferFrames uint32, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetBufferSize, uintptr(unsafe.Pointer(self)),
+func (client *IAudioClient) GetBufferSize() (numBufferFrames uint32, err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.GetBufferSize, uintptr(unsafe.Pointer(client)),
 		uintptr(unsafe.Pointer(&numBufferFrames)),
 	)
 
@@ -89,8 +89,8 @@ func (self *IAudioClient) GetBufferSize() (numBufferFrames uint32, err error) {
 }
 
 // GetStreamLatency 方法检索当前流的最大延迟，并且可以在初始化流后随时调用。
-func (self *IAudioClient) GetStreamLatency() (hnsLatency uint64, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetStreamLatency, uintptr(unsafe.Pointer(self)),
+func (client *IAudioClient) GetStreamLatency() (hnsLatency uint64, err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.GetStreamLatency, uintptr(unsafe.Pointer(client)),
 		uintptr(unsafe.Pointer(&hnsLatency)),
 	)
 
@@ -103,8 +103,8 @@ func (self *IAudioClient) GetStreamLatency() (hnsLatency uint64, err error) {
 }
 
 // GetCurrentPadding 方法检索终结点缓冲区中填充的帧数。
-func (self *IAudioClient) GetCurrentPadding() (numPaddingFrames uint32, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetCurrentPadding, uintptr(unsafe.Pointer(self)),
+func (client *IAudioClient) GetCurrentPadding() (numPaddingFrames uint32, err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.GetCurrentPadding, uintptr(unsafe.Pointer(client)),
 		uintptr(unsafe.Pointer(&numPaddingFrames)),
 	)
 
@@ -117,7 +117,7 @@ func (self *IAudioClient) GetCurrentPadding() (numPaddingFrames uint32, err erro
 }
 
 // IsFormatSupported 方法指示音频终结点设备是否支持特定的流格式。
-func (self *IAudioClient) IsFormatSupported(shareMode AUDCLNT_SHAREMODE, format *WAVEFORMATEXTENSIBLE) (closestMatch WAVEFORMATEXTENSIBLE, err error) {
+func (client *IAudioClient) IsFormatSupported(shareMode AUDCLNT_SHAREMODE, format *WAVEFORMATEXTENSIBLE) (closestMatch WAVEFORMATEXTENSIBLE, err error) {
 	var (
 		closestMatchPtr *byte
 		formatBuf       []byte
@@ -125,7 +125,7 @@ func (self *IAudioClient) IsFormatSupported(shareMode AUDCLNT_SHAREMODE, format 
 
 	formatBuf = format.toBytes()
 
-	r, _, _ := syscall.SyscallN(self.vtbl.IsFormatSupported, uintptr(unsafe.Pointer(self)),
+	r, _, _ := syscall.SyscallN(client.vtbl.IsFormatSupported, uintptr(unsafe.Pointer(client)),
 		uintptr(shareMode),
 		uintptr(unsafe.Pointer(&formatBuf[0])),
 		uintptr(unsafe.Pointer(&closestMatchPtr)),
@@ -148,9 +148,9 @@ func (self *IAudioClient) IsFormatSupported(shareMode AUDCLNT_SHAREMODE, format 
 }
 
 // GetMixFormat 方法检索音频引擎用于内部处理共享模式流的流格式。
-func (self *IAudioClient) GetMixFormat() (deviceFormat WAVEFORMATEXTENSIBLE, err error) {
+func (client *IAudioClient) GetMixFormat() (deviceFormat WAVEFORMATEXTENSIBLE, err error) {
 	var formatPtr *byte
-	r, _, _ := syscall.SyscallN(self.vtbl.GetMixFormat, uintptr(unsafe.Pointer(self)),
+	r, _, _ := syscall.SyscallN(client.vtbl.GetMixFormat, uintptr(unsafe.Pointer(client)),
 		uintptr(unsafe.Pointer(&formatPtr)),
 	)
 
@@ -169,8 +169,8 @@ func (self *IAudioClient) GetMixFormat() (deviceFormat WAVEFORMATEXTENSIBLE, err
 }
 
 // GetDevicePeriod 方法检索音频引擎对终结点缓冲区中数据的连续处理过程分隔的周期间隔的长度。
-func (self *IAudioClient) GetDevicePeriod() (hnsDefaultDevicePeriod, hnsMinimumDevicePeriod uint64, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetDevicePeriod, uintptr(unsafe.Pointer(self)),
+func (client *IAudioClient) GetDevicePeriod() (hnsDefaultDevicePeriod, hnsMinimumDevicePeriod uint64, err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.GetDevicePeriod, uintptr(unsafe.Pointer(client)),
 		uintptr(unsafe.Pointer(&hnsDefaultDevicePeriod)),
 		uintptr(unsafe.Pointer(&hnsMinimumDevicePeriod)),
 	)
@@ -184,8 +184,8 @@ func (self *IAudioClient) GetDevicePeriod() (hnsDefaultDevicePeriod, hnsMinimumD
 }
 
 // Start 方法启动音频流。
-func (self *IAudioClient) Start() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Start, uintptr(unsafe.Pointer(self)))
+func (client *IAudioClient) Start() (err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.Start, uintptr(unsafe.Pointer(client)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IAudioClient::Start failed with code: 0x%08X", com.HRESULT(r))
@@ -196,8 +196,8 @@ func (self *IAudioClient) Start() (err error) {
 }
 
 // Stop 方法停止音频流。
-func (self *IAudioClient) Stop() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Stop, uintptr(unsafe.Pointer(self)))
+func (client *IAudioClient) Stop() (err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.Stop, uintptr(unsafe.Pointer(client)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IAudioClient::Stop failed with code: 0x%08X", com.HRESULT(r))
@@ -208,8 +208,8 @@ func (self *IAudioClient) Stop() (err error) {
 }
 
 // Reset 方法重置音频流。
-func (self *IAudioClient) Reset() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Reset, uintptr(unsafe.Pointer(self)))
+func (client *IAudioClient) Reset() (err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.Reset, uintptr(unsafe.Pointer(client)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IAudioClient::Reset failed with code: 0x%08X", com.HRESULT(r))
@@ -220,8 +220,8 @@ func (self *IAudioClient) Reset() (err error) {
 }
 
 // SetEventHandle 方法设置当音频缓冲区可供客户端处理时系统发出信号的事件句柄。
-func (self *IAudioClient) SetEventHandle(eventHandle windows.Handle) (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.SetEventHandle, uintptr(unsafe.Pointer(self)),
+func (client *IAudioClient) SetEventHandle(eventHandle windows.Handle) (err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.SetEventHandle, uintptr(unsafe.Pointer(client)),
 		uintptr(eventHandle),
 	)
 
@@ -234,8 +234,8 @@ func (self *IAudioClient) SetEventHandle(eventHandle windows.Handle) (err error)
 }
 
 // GetService 方法从音频客户端对象访问其他服务。
-func (self *IAudioClient) GetService(iid *windows.GUID) (v unsafe.Pointer, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetService, uintptr(unsafe.Pointer(self)),
+func (client *IAudioClient) GetService(iid *windows.GUID) (v unsafe.Pointer, err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.GetService, uintptr(unsafe.Pointer(client)),
 		uintptr(unsafe.Pointer(iid)),
 		uintptr(unsafe.Pointer(&v)),
 	)

@@ -25,8 +25,8 @@ type _IMMEndpointVtbl struct {
 	GetDataFlow uintptr
 }
 
-func (self *IMMEndpoint) Release() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Release, uintptr(unsafe.Pointer(self)))
+func (endpoint *IMMEndpoint) Release() (err error) {
+	r, _, _ := syscall.SyscallN(endpoint.vtbl.Release, uintptr(unsafe.Pointer(endpoint)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IMMEndpoint::Release failed with code: 0x%08X", com.HRESULT(r))
@@ -37,8 +37,8 @@ func (self *IMMEndpoint) Release() (err error) {
 }
 
 // GetDataFlow 方法指示音频端点设备是呈现设备还是捕获设备。
-func (self *IMMEndpoint) GetDataFlow() (dataFlow EDataFlow, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetDataFlow, uintptr(unsafe.Pointer(self)),
+func (endpoint *IMMEndpoint) GetDataFlow() (dataFlow EDataFlow, err error) {
+	r, _, _ := syscall.SyscallN(endpoint.vtbl.GetDataFlow, uintptr(unsafe.Pointer(endpoint)),
 		uintptr(unsafe.Pointer(&dataFlow)),
 	)
 

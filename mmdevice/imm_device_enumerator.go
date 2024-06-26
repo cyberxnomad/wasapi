@@ -29,8 +29,8 @@ type _IMMDeviceEnumeratorVtbl struct {
 	UnregisterEndpointNotificationCallback uintptr
 }
 
-func (self *IMMDeviceEnumerator) Release() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Release, uintptr(unsafe.Pointer(self)))
+func (enumerator *IMMDeviceEnumerator) Release() (err error) {
+	r, _, _ := syscall.SyscallN(enumerator.vtbl.Release, uintptr(unsafe.Pointer(enumerator)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IMMDeviceEnumerator::Release failed with code: 0x%08X", com.HRESULT(r))
@@ -42,8 +42,8 @@ func (self *IMMDeviceEnumerator) Release() (err error) {
 
 // EnumAudioEndpoints 方法生成符合指定条件的音频终结点设备的集合。
 // 不需要时需主动调用 Release 方法。
-func (self *IMMDeviceEnumerator) EnumAudioEndpoints(dataFlow EDataFlow, stateMask uint32) (devices *IMMDeviceCollection, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.EnumAudioEndpoints, uintptr(unsafe.Pointer(self)),
+func (enumerator *IMMDeviceEnumerator) EnumAudioEndpoints(dataFlow EDataFlow, stateMask uint32) (devices *IMMDeviceCollection, err error) {
+	r, _, _ := syscall.SyscallN(enumerator.vtbl.EnumAudioEndpoints, uintptr(unsafe.Pointer(enumerator)),
 		uintptr(dataFlow),
 		uintptr(stateMask),
 		uintptr(unsafe.Pointer(&devices)),
@@ -58,8 +58,8 @@ func (self *IMMDeviceEnumerator) EnumAudioEndpoints(dataFlow EDataFlow, stateMas
 }
 
 // GetDefaultAudioEndpoint 方法检索指定数据流方向和角色的默认音频终结点。
-func (self *IMMDeviceEnumerator) GetDefaultAudioEndpoint(dataFlow EDataFlow, role ERole) (endpoint *IMMDevice, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetDefaultAudioEndpoint, uintptr(unsafe.Pointer(self)),
+func (enumerator *IMMDeviceEnumerator) GetDefaultAudioEndpoint(dataFlow EDataFlow, role ERole) (endpoint *IMMDevice, err error) {
+	r, _, _ := syscall.SyscallN(enumerator.vtbl.GetDefaultAudioEndpoint, uintptr(unsafe.Pointer(enumerator)),
 		uintptr(dataFlow),
 		uintptr(role),
 		uintptr(unsafe.Pointer(&endpoint)),
@@ -74,14 +74,14 @@ func (self *IMMDeviceEnumerator) GetDefaultAudioEndpoint(dataFlow EDataFlow, rol
 }
 
 // GetDevice 方法检索由终结点 ID 字符串标识的音频终结点设备。
-func (self *IMMDeviceEnumerator) GetDevice(id string) (device *IMMDevice, err error) {
+func (enumerator *IMMDeviceEnumerator) GetDevice(id string) (device *IMMDevice, err error) {
 	var utf16ptr *uint16
 
 	if utf16ptr, err = windows.UTF16PtrFromString(id); err != nil {
 		return
 	}
 
-	r, _, _ := syscall.SyscallN(self.vtbl.GetDevice, uintptr(unsafe.Pointer(self)),
+	r, _, _ := syscall.SyscallN(enumerator.vtbl.GetDevice, uintptr(unsafe.Pointer(enumerator)),
 		uintptr(unsafe.Pointer(utf16ptr)),
 		uintptr(unsafe.Pointer(&device)),
 	)
@@ -95,8 +95,8 @@ func (self *IMMDeviceEnumerator) GetDevice(id string) (device *IMMDevice, err er
 }
 
 // RegisterEndpointNotificationCallback 方法注册客户端的通知回调接口。
-func (self *IMMDeviceEnumerator) RegisterEndpointNotificationCallback(client *IMMNotificationClient) (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetDevice, uintptr(unsafe.Pointer(self)),
+func (enumerator *IMMDeviceEnumerator) RegisterEndpointNotificationCallback(client *IMMNotificationClient) (err error) {
+	r, _, _ := syscall.SyscallN(enumerator.vtbl.GetDevice, uintptr(unsafe.Pointer(enumerator)),
 		uintptr(unsafe.Pointer(client)),
 	)
 
@@ -110,8 +110,8 @@ func (self *IMMDeviceEnumerator) RegisterEndpointNotificationCallback(client *IM
 
 // UnregisterEndpointNotificationCallback 方法删除客户端在对
 // IMMDeviceEnumerator::RegisterEndpointNotificationCallback 方法的调用中注册的通知接口的注册。
-func (self *IMMDeviceEnumerator) UnregisterEndpointNotificationCallback(client *IMMNotificationClient) (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetDevice, uintptr(unsafe.Pointer(self)),
+func (enumerator *IMMDeviceEnumerator) UnregisterEndpointNotificationCallback(client *IMMNotificationClient) (err error) {
+	r, _, _ := syscall.SyscallN(enumerator.vtbl.GetDevice, uintptr(unsafe.Pointer(enumerator)),
 		uintptr(unsafe.Pointer(client)),
 	)
 

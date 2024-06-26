@@ -28,8 +28,8 @@ type _IMMDeviceVtbl struct {
 	GetState          uintptr
 }
 
-func (self *IMMDevice) Release() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Release, uintptr(unsafe.Pointer(self)))
+func (device *IMMDevice) Release() (err error) {
+	r, _, _ := syscall.SyscallN(device.vtbl.Release, uintptr(unsafe.Pointer(device)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IMMDevice::Release failed with code: 0x%08X", com.HRESULT(r))
@@ -41,8 +41,8 @@ func (self *IMMDevice) Release() (err error) {
 
 // Activate 方法创建具有指定接口的 COM 对象。
 // 不需要时需主动调用 Release 方法。
-func (self *IMMDevice) Activate(iid windows.GUID, clsCtx uint32, activationParams *com.PROPVARIANT) (ppInterface unsafe.Pointer, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Activate, uintptr(unsafe.Pointer(self)),
+func (device *IMMDevice) Activate(iid windows.GUID, clsCtx uint32, activationParams *com.PROPVARIANT) (ppInterface unsafe.Pointer, err error) {
+	r, _, _ := syscall.SyscallN(device.vtbl.Activate, uintptr(unsafe.Pointer(device)),
 		uintptr(unsafe.Pointer(&iid)),
 		uintptr(clsCtx),
 		uintptr(unsafe.Pointer(activationParams)),
@@ -58,9 +58,9 @@ func (self *IMMDevice) Activate(iid windows.GUID, clsCtx uint32, activationParam
 }
 
 // GetId 方法检索标识音频终结点设备的终结点 ID 字符串。
-func (self *IMMDevice) GetId() (id string, err error) {
+func (device *IMMDevice) GetId() (id string, err error) {
 	var utf16ptr *uint16
-	r, _, _ := syscall.SyscallN(self.vtbl.GetId, uintptr(unsafe.Pointer(self)),
+	r, _, _ := syscall.SyscallN(device.vtbl.GetId, uintptr(unsafe.Pointer(device)),
 		uintptr(unsafe.Pointer(&utf16ptr)),
 	)
 
@@ -78,8 +78,8 @@ func (self *IMMDevice) GetId() (id string, err error) {
 }
 
 // GetState 方法检索当前设备状态。
-func (self *IMMDevice) GetState() (state uint32, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetState, uintptr(unsafe.Pointer(self)),
+func (device *IMMDevice) GetState() (state uint32, err error) {
+	r, _, _ := syscall.SyscallN(device.vtbl.GetState, uintptr(unsafe.Pointer(device)),
 		uintptr(unsafe.Pointer(&state)),
 	)
 
@@ -93,8 +93,8 @@ func (self *IMMDevice) GetState() (state uint32, err error) {
 
 // OpenPropertyStore 方法检索设备属性存储的接口。
 // 不需要时需主动调用 Release 方法。
-func (self *IMMDevice) OpenPropertyStore(stgmAccess uint32) (properties *com.IPropertyStore, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.OpenPropertyStore, uintptr(unsafe.Pointer(self)),
+func (device *IMMDevice) OpenPropertyStore(stgmAccess uint32) (properties *com.IPropertyStore, err error) {
+	r, _, _ := syscall.SyscallN(device.vtbl.OpenPropertyStore, uintptr(unsafe.Pointer(device)),
 		uintptr(stgmAccess),
 		uintptr(unsafe.Pointer(&properties)),
 	)

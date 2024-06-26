@@ -27,8 +27,8 @@ type _IAudioClockVtbl struct {
 	GetCharacteristics uintptr
 }
 
-func (self *IAudioClock) Release() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Release, uintptr(unsafe.Pointer(self)))
+func (clock *IAudioClock) Release() (err error) {
+	r, _, _ := syscall.SyscallN(clock.vtbl.Release, uintptr(unsafe.Pointer(clock)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IAudioClock::Release failed with code: 0x%08X", com.HRESULT(r))
@@ -39,8 +39,8 @@ func (self *IAudioClock) Release() (err error) {
 }
 
 // GetFrequency 方法获取设备频率。
-func (self *IAudioClock) GetFrequency() (frequency uint64, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetFrequency, uintptr(unsafe.Pointer(self)),
+func (clock *IAudioClock) GetFrequency() (frequency uint64, err error) {
+	r, _, _ := syscall.SyscallN(clock.vtbl.GetFrequency, uintptr(unsafe.Pointer(clock)),
 		uintptr(unsafe.Pointer(&frequency)),
 	)
 
@@ -53,8 +53,8 @@ func (self *IAudioClock) GetFrequency() (frequency uint64, err error) {
 }
 
 // GetPosition 方法获取当前设备位置。
-func (self *IAudioClock) GetPosition() (position uint64, QPCPosition uint64, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetPosition, uintptr(unsafe.Pointer(self)),
+func (clock *IAudioClock) GetPosition() (position uint64, QPCPosition uint64, err error) {
+	r, _, _ := syscall.SyscallN(clock.vtbl.GetPosition, uintptr(unsafe.Pointer(clock)),
 		uintptr(unsafe.Pointer(&position)),
 		uintptr(unsafe.Pointer(&QPCPosition)),
 	)
@@ -68,8 +68,8 @@ func (self *IAudioClock) GetPosition() (position uint64, QPCPosition uint64, err
 }
 
 // GetCharacteristics 方法保留供将来使用。
-func (self *IAudioClock) GetCharacteristics() (characteristics uint32, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetCharacteristics, uintptr(unsafe.Pointer(self)),
+func (clock *IAudioClock) GetCharacteristics() (characteristics uint32, err error) {
+	r, _, _ := syscall.SyscallN(clock.vtbl.GetCharacteristics, uintptr(unsafe.Pointer(clock)),
 		uintptr(unsafe.Pointer(&characteristics)),
 	)
 

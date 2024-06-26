@@ -30,8 +30,8 @@ type _IMMNotificationClientVtbl struct {
 	OnPropertyValueChanged uintptr
 }
 
-func (self *IMMNotificationClient) Release() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Release, uintptr(unsafe.Pointer(self)))
+func (client *IMMNotificationClient) Release() (err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.Release, uintptr(unsafe.Pointer(client)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IMMDevice::Release failed with code: 0x%08X", com.HRESULT(r))
@@ -42,14 +42,14 @@ func (self *IMMNotificationClient) Release() (err error) {
 }
 
 // OnDefaultDeviceChanged 方法通知客户端特定设备的默认音频终结点设备已更改。
-func (self *IMMNotificationClient) OnDefaultDeviceChanged(flow EDataFlow, role ERole, defaultDeviceId string) (err error) {
+func (client *IMMNotificationClient) OnDefaultDeviceChanged(flow EDataFlow, role ERole, defaultDeviceId string) (err error) {
 	var utf16ptr *uint16
 
 	if utf16ptr, err = windows.UTF16PtrFromString(defaultDeviceId); err != nil {
 		return
 	}
 
-	r, _, _ := syscall.SyscallN(self.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(self)),
+	r, _, _ := syscall.SyscallN(client.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(client)),
 		uintptr(flow),
 		uintptr(role),
 		uintptr(unsafe.Pointer(utf16ptr)),
@@ -65,14 +65,14 @@ func (self *IMMNotificationClient) OnDefaultDeviceChanged(flow EDataFlow, role E
 }
 
 // OnDeviceAdded 方法指示已添加新的音频终结点设备。
-func (self *IMMNotificationClient) OnDeviceAdded(deviceId string) (err error) {
+func (client *IMMNotificationClient) OnDeviceAdded(deviceId string) (err error) {
 	var utf16ptr *uint16
 
 	if utf16ptr, err = windows.UTF16PtrFromString(deviceId); err != nil {
 		return
 	}
 
-	r, _, _ := syscall.SyscallN(self.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(self)),
+	r, _, _ := syscall.SyscallN(client.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(client)),
 		uintptr(unsafe.Pointer(utf16ptr)),
 	)
 	runtime.KeepAlive(utf16ptr)
@@ -86,14 +86,14 @@ func (self *IMMNotificationClient) OnDeviceAdded(deviceId string) (err error) {
 }
 
 // OnDeviceRemoved 方法指示已删除音频终结点设备。
-func (self *IMMNotificationClient) OnDeviceRemoved(deviceId string) (err error) {
+func (client *IMMNotificationClient) OnDeviceRemoved(deviceId string) (err error) {
 	var utf16ptr *uint16
 
 	if utf16ptr, err = windows.UTF16PtrFromString(deviceId); err != nil {
 		return
 	}
 
-	r, _, _ := syscall.SyscallN(self.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(self)),
+	r, _, _ := syscall.SyscallN(client.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(client)),
 		uintptr(unsafe.Pointer(utf16ptr)),
 	)
 	runtime.KeepAlive(utf16ptr)
@@ -107,14 +107,14 @@ func (self *IMMNotificationClient) OnDeviceRemoved(deviceId string) (err error) 
 }
 
 // OnDeviceStateChanged 方法指示音频终结点设备的状态已更改。
-func (self *IMMNotificationClient) OnDeviceStateChanged(deviceId string, newState uint32) (err error) {
+func (client *IMMNotificationClient) OnDeviceStateChanged(deviceId string, newState uint32) (err error) {
 	var utf16ptr *uint16
 
 	if utf16ptr, err = windows.UTF16PtrFromString(deviceId); err != nil {
 		return
 	}
 
-	r, _, _ := syscall.SyscallN(self.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(self)),
+	r, _, _ := syscall.SyscallN(client.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(client)),
 		uintptr(unsafe.Pointer(utf16ptr)),
 		uintptr(newState),
 	)
@@ -129,14 +129,14 @@ func (self *IMMNotificationClient) OnDeviceStateChanged(deviceId string, newStat
 }
 
 // OnPropertyValueChanged 方法指示属于音频终结点设备的属性的值已更改。
-func (self *IMMNotificationClient) OnPropertyValueChanged(deviceId string, key com.PROPERTYKEY) (err error) {
+func (client *IMMNotificationClient) OnPropertyValueChanged(deviceId string, key com.PROPERTYKEY) (err error) {
 	var utf16ptr *uint16
 
 	if utf16ptr, err = windows.UTF16PtrFromString(deviceId); err != nil {
 		return
 	}
 
-	r, _, _ := syscall.SyscallN(self.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(self)),
+	r, _, _ := syscall.SyscallN(client.vtbl.OnDefaultDeviceChanged, uintptr(unsafe.Pointer(client)),
 		uintptr(unsafe.Pointer(utf16ptr)),
 		uintptr(unsafe.Pointer(&key)),
 	)

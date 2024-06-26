@@ -15,10 +15,10 @@ type PROPVARIANT struct {
 	_          uint64
 }
 
-func (self *PROPVARIANT) PwszVal() *uint16 {
-	return *(**uint16)(unsafe.Pointer(&self.Val))
+func (propvar *PROPVARIANT) PwszVal() *uint16 {
+	return *(**uint16)(unsafe.Pointer(&propvar.Val))
 }
 
-func (self *PROPVARIANT) PwszValString() string {
-	return windows.UTF16PtrToString(self.PwszVal())
+func (propvar *PROPVARIANT) PwszValString() string {
+	return windows.UTF16PtrToString(propvar.PwszVal())
 }

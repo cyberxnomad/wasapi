@@ -34,8 +34,8 @@ type _IPropertyStoreVtbl struct {
 	Commit   uintptr
 }
 
-func (self *IPropertyStore) Release() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Release, uintptr(unsafe.Pointer(self)))
+func (prop *IPropertyStore) Release() (err error) {
+	r, _, _ := syscall.SyscallN(prop.vtbl.Release, uintptr(unsafe.Pointer(prop)))
 
 	if HRESULT(r) != HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IPropertyStore::Release failed with code: 0x%08X", HRESULT(r))
@@ -46,8 +46,8 @@ func (self *IPropertyStore) Release() (err error) {
 }
 
 // 此方法返回附加到文件的属性数的计数。
-func (self *IPropertyStore) GetCount() (cProps uint32, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetCount, uintptr(unsafe.Pointer(self)),
+func (prop *IPropertyStore) GetCount() (cProps uint32, err error) {
+	r, _, _ := syscall.SyscallN(prop.vtbl.GetCount, uintptr(unsafe.Pointer(prop)),
 		uintptr(unsafe.Pointer(&cProps)),
 	)
 
@@ -60,8 +60,8 @@ func (self *IPropertyStore) GetCount() (cProps uint32, err error) {
 }
 
 // 从项的属性数组中获取属性键。
-func (self *IPropertyStore) GetAt(iProp uint32) (key *PROPERTYKEY, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetAt, uintptr(unsafe.Pointer(self)),
+func (prop *IPropertyStore) GetAt(iProp uint32) (key *PROPERTYKEY, err error) {
+	r, _, _ := syscall.SyscallN(prop.vtbl.GetAt, uintptr(unsafe.Pointer(prop)),
 		uintptr(iProp),
 		uintptr(unsafe.Pointer(&key)),
 	)
@@ -75,9 +75,9 @@ func (self *IPropertyStore) GetAt(iProp uint32) (key *PROPERTYKEY, err error) {
 }
 
 // 此方法检索特定属性的数据。
-func (self *IPropertyStore) GetValue(key PROPERTYKEY) (propVar PROPVARIANT, err error) {
+func (prop *IPropertyStore) GetValue(key PROPERTYKEY) (propVar PROPVARIANT, err error) {
 
-	r, _, _ := syscall.SyscallN(self.vtbl.GetValue, uintptr(unsafe.Pointer(self)),
+	r, _, _ := syscall.SyscallN(prop.vtbl.GetValue, uintptr(unsafe.Pointer(prop)),
 		uintptr(unsafe.Pointer(&key)),
 		uintptr(unsafe.Pointer(&propVar)),
 	)
@@ -91,8 +91,8 @@ func (self *IPropertyStore) GetValue(key PROPERTYKEY) (propVar PROPVARIANT, err 
 }
 
 // 此方法设置属性值或替换或删除现有值。
-func (self *IPropertyStore) SetValue(key PROPERTYKEY, propVar PROPVARIANT) (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.SetValue, uintptr(unsafe.Pointer(self)),
+func (prop *IPropertyStore) SetValue(key PROPERTYKEY, propVar PROPVARIANT) (err error) {
+	r, _, _ := syscall.SyscallN(prop.vtbl.SetValue, uintptr(unsafe.Pointer(prop)),
 		uintptr(unsafe.Pointer(&key)),
 		uintptr(unsafe.Pointer(&propVar)),
 	)
@@ -106,8 +106,8 @@ func (self *IPropertyStore) SetValue(key PROPERTYKEY, propVar PROPVARIANT) (err 
 }
 
 // 进行更改后，此方法将保存更改。
-func (self *IPropertyStore) Commit() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Commit, uintptr(unsafe.Pointer(self)))
+func (prop *IPropertyStore) Commit() (err error) {
+	r, _, _ := syscall.SyscallN(prop.vtbl.Commit, uintptr(unsafe.Pointer(prop)))
 
 	if HRESULT(r) != HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IPropertyStore::Commit failed with code: 0x%08X", HRESULT(r))

@@ -29,8 +29,8 @@ type _IChannelAudioVolumeVtbl struct {
 	GetAllVolumes    uintptr
 }
 
-func (self *IChannelAudioVolume) Release() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Release, uintptr(unsafe.Pointer(self)))
+func (volume *IChannelAudioVolume) Release() (err error) {
+	r, _, _ := syscall.SyscallN(volume.vtbl.Release, uintptr(unsafe.Pointer(volume)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IChannelAudioVolume::Release failed with code: 0x%08X", com.HRESULT(r))
@@ -41,8 +41,8 @@ func (self *IChannelAudioVolume) Release() (err error) {
 }
 
 // GetChannelCount 方法检索音频会话的流格式的通道数。
-func (self *IChannelAudioVolume) GetChannelCount() (count uint32, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetChannelCount, uintptr(unsafe.Pointer(self)),
+func (volume *IChannelAudioVolume) GetChannelCount() (count uint32, err error) {
+	r, _, _ := syscall.SyscallN(volume.vtbl.GetChannelCount, uintptr(unsafe.Pointer(volume)),
 		uintptr(unsafe.Pointer(&count)),
 	)
 
@@ -55,8 +55,8 @@ func (self *IChannelAudioVolume) GetChannelCount() (count uint32, err error) {
 }
 
 // SetChannelVolume 方法设置音频会话中指定声道的音量级别。
-func (self *IChannelAudioVolume) SetChannelVolume(index uint32, level float32, eventContext *windows.GUID) (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.SetChannelVolume, uintptr(unsafe.Pointer(self)),
+func (volume *IChannelAudioVolume) SetChannelVolume(index uint32, level float32, eventContext *windows.GUID) (err error) {
+	r, _, _ := syscall.SyscallN(volume.vtbl.SetChannelVolume, uintptr(unsafe.Pointer(volume)),
 		uintptr(index),
 		uintptr(level),
 		uintptr(unsafe.Pointer(eventContext)),
@@ -71,8 +71,8 @@ func (self *IChannelAudioVolume) SetChannelVolume(index uint32, level float32, e
 }
 
 // GetChannelVolume 方法检索音频会话中指定声道的音量级别。
-func (self *IChannelAudioVolume) GetChannelVolume(index uint32) (level float32, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetChannelVolume, uintptr(unsafe.Pointer(self)),
+func (volume *IChannelAudioVolume) GetChannelVolume(index uint32) (level float32, err error) {
+	r, _, _ := syscall.SyscallN(volume.vtbl.GetChannelVolume, uintptr(unsafe.Pointer(volume)),
 		uintptr(index),
 		uintptr(unsafe.Pointer(&level)),
 	)
@@ -86,8 +86,8 @@ func (self *IChannelAudioVolume) GetChannelVolume(index uint32) (level float32, 
 }
 
 // SetAllVolumes 方法设置音频会话中所有声道的单个音量级别。
-func (self *IChannelAudioVolume) SetAllVolumes(count uint32, level []float32, eventContext *windows.GUID) (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.SetAllVolumes, uintptr(unsafe.Pointer(self)),
+func (volume *IChannelAudioVolume) SetAllVolumes(count uint32, level []float32, eventContext *windows.GUID) (err error) {
+	r, _, _ := syscall.SyscallN(volume.vtbl.SetAllVolumes, uintptr(unsafe.Pointer(volume)),
 		uintptr(count),
 		uintptr(unsafe.Pointer(&level)),
 		uintptr(unsafe.Pointer(eventContext)),
@@ -102,8 +102,8 @@ func (self *IChannelAudioVolume) SetAllVolumes(count uint32, level []float32, ev
 }
 
 // GetAllVolumes 方法检索音频会话中所有通道的音量级别。
-func (self *IChannelAudioVolume) GetAllVolumes(count uint32) (level []float32, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetAllVolumes, uintptr(unsafe.Pointer(self)),
+func (volume *IChannelAudioVolume) GetAllVolumes(count uint32) (level []float32, err error) {
+	r, _, _ := syscall.SyscallN(volume.vtbl.GetAllVolumes, uintptr(unsafe.Pointer(volume)),
 		uintptr(count),
 		uintptr(unsafe.Pointer(&level)),
 	)

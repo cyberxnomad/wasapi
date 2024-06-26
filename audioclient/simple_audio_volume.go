@@ -28,8 +28,8 @@ type _ISimpleAudioVolumeVtbl struct {
 	GetMute         uintptr
 }
 
-func (self *ISimpleAudioVolume) Release() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Release, uintptr(unsafe.Pointer(self)))
+func (volume *ISimpleAudioVolume) Release() (err error) {
+	r, _, _ := syscall.SyscallN(volume.vtbl.Release, uintptr(unsafe.Pointer(volume)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("ISimpleAudioVolume::Release failed with code: 0x%08X", com.HRESULT(r))
@@ -40,8 +40,8 @@ func (self *ISimpleAudioVolume) Release() (err error) {
 }
 
 // SetMasterVolume 方法设置音频会话的主音量级别。
-func (self *ISimpleAudioVolume) SetMasterVolume(level float32, eventContext *windows.GUID) (count uint32, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.SetMasterVolume, uintptr(unsafe.Pointer(self)),
+func (volume *ISimpleAudioVolume) SetMasterVolume(level float32, eventContext *windows.GUID) (count uint32, err error) {
+	r, _, _ := syscall.SyscallN(volume.vtbl.SetMasterVolume, uintptr(unsafe.Pointer(volume)),
 		uintptr(level),
 		uintptr(unsafe.Pointer(eventContext)),
 	)
@@ -55,8 +55,8 @@ func (self *ISimpleAudioVolume) SetMasterVolume(level float32, eventContext *win
 }
 
 // GetMasterVolume 方法检索音频会话的客户端音量级别。
-func (self *ISimpleAudioVolume) GetMasterVolume() (level float32, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetMasterVolume, uintptr(unsafe.Pointer(self)),
+func (volume *ISimpleAudioVolume) GetMasterVolume() (level float32, err error) {
+	r, _, _ := syscall.SyscallN(volume.vtbl.GetMasterVolume, uintptr(unsafe.Pointer(volume)),
 		uintptr(unsafe.Pointer(&level)),
 	)
 
@@ -69,8 +69,8 @@ func (self *ISimpleAudioVolume) GetMasterVolume() (level float32, err error) {
 }
 
 // SetMute 方法设置音频会话的静音状态。
-func (self *ISimpleAudioVolume) SetMute(mute bool, eventContext *windows.GUID) (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.SetMute, uintptr(unsafe.Pointer(self)),
+func (volume *ISimpleAudioVolume) SetMute(mute bool, eventContext *windows.GUID) (err error) {
+	r, _, _ := syscall.SyscallN(volume.vtbl.SetMute, uintptr(unsafe.Pointer(volume)),
 		uintptr(unsafe.Pointer(&mute)),
 		uintptr(unsafe.Pointer(eventContext)),
 	)
@@ -84,8 +84,8 @@ func (self *ISimpleAudioVolume) SetMute(mute bool, eventContext *windows.GUID) (
 }
 
 // GetMute 方法检索音频会话的当前静音状态。
-func (self *ISimpleAudioVolume) GetMute() (mute bool, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetMute, uintptr(unsafe.Pointer(self)),
+func (volume *ISimpleAudioVolume) GetMute() (mute bool, err error) {
+	r, _, _ := syscall.SyscallN(volume.vtbl.GetMute, uintptr(unsafe.Pointer(volume)),
 		uintptr(unsafe.Pointer(&mute)),
 	)
 

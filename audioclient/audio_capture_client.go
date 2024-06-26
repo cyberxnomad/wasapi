@@ -27,8 +27,8 @@ type _IAudioCaptureClientVtbl struct {
 	GetNextPacketSize uintptr
 }
 
-func (self *IAudioCaptureClient) Release() (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.Release, uintptr(unsafe.Pointer(self)))
+func (client *IAudioCaptureClient) Release() (err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.Release, uintptr(unsafe.Pointer(client)))
 
 	if com.HRESULT(r) != com.HRESULT(windows.S_OK) {
 		err = fmt.Errorf("IAudioClient::Release failed with code: 0x%08X", com.HRESULT(r))
@@ -43,9 +43,9 @@ func (self *IAudioCaptureClient) Release() (err error) {
 // 音频帧的大小由客户端通过调用 IAudioClient::GetMixFormat 方法获取的 WAVEFORMATEX (或 WAVEFORMATEXTENSIBLE)
 // 结构的 nBlockAlign 成员指定。 音频帧的大小（以字节为单位）等于流中的通道数乘以每个通道的样本大小。 例如，
 // 包含 16 位样本的立体声 (2 声道) 流的帧大小为 4 个字节。
-func (self *IAudioCaptureClient) GetBuffer() (data []byte, numFramesToRead uint32, flags uint32, devicePosition uint64, QPCPosition uint64, err error) {
+func (client *IAudioCaptureClient) GetBuffer() (data []byte, numFramesToRead uint32, flags uint32, devicePosition uint64, QPCPosition uint64, err error) {
 	var buf *uint8
-	r, _, _ := syscall.SyscallN(self.vtbl.GetBuffer, uintptr(unsafe.Pointer(self)),
+	r, _, _ := syscall.SyscallN(client.vtbl.GetBuffer, uintptr(unsafe.Pointer(client)),
 		uintptr(unsafe.Pointer(&buf)),
 		uintptr(unsafe.Pointer(&numFramesToRead)),
 		uintptr(unsafe.Pointer(&flags)),
@@ -64,8 +64,8 @@ func (self *IAudioCaptureClient) GetBuffer() (data []byte, numFramesToRead uint3
 }
 
 // ReleaseBuffer 方法释放缓冲区。
-func (self *IAudioCaptureClient) ReleaseBuffer(numFramesToRead uint32) (err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.ReleaseBuffer, uintptr(unsafe.Pointer(self)),
+func (client *IAudioCaptureClient) ReleaseBuffer(numFramesToRead uint32) (err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.ReleaseBuffer, uintptr(unsafe.Pointer(client)),
 		uintptr(numFramesToRead),
 	)
 
@@ -78,8 +78,8 @@ func (self *IAudioCaptureClient) ReleaseBuffer(numFramesToRead uint32) (err erro
 }
 
 // GetNextPacketSize 方法检索捕获终结点缓冲区中下一个数据包中的帧数。
-func (self *IAudioCaptureClient) GetNextPacketSize() (numFramesInNextPacket uint32, err error) {
-	r, _, _ := syscall.SyscallN(self.vtbl.GetNextPacketSize, uintptr(unsafe.Pointer(self)),
+func (client *IAudioCaptureClient) GetNextPacketSize() (numFramesInNextPacket uint32, err error) {
+	r, _, _ := syscall.SyscallN(client.vtbl.GetNextPacketSize, uintptr(unsafe.Pointer(client)),
 		uintptr(unsafe.Pointer(&numFramesInNextPacket)),
 	)
 
