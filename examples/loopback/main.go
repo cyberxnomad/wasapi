@@ -37,7 +37,7 @@ func main() {
 		propVar           com.PROPVARIANT
 		audioClient       *audioclient.IAudioClient
 		captureClient     *audioclient.IAudioCaptureClient
-		format            *audioclient.WAVEFORMATEXTENSIBLE
+		format            audioclient.WAVEFORMATEXTENSIBLE
 		hnsActualDuration uint64
 		bufferFrameCount  uint32
 		quit              chan int
@@ -113,15 +113,14 @@ func main() {
 	if format, err = audioClient.GetMixFormat(); err != nil {
 		panic(err)
 	}
-	defer com.CoTaskMemFree(unsafe.Pointer(format))
 
-	showWaveFormat(format)
+	showWaveFormat(&format)
 
 	// 初始化音频流
 	if err = audioClient.Initialize(
 		audioclient.AUDCLNT_SHAREMODE_SHARED,
 		audioclient.AUDCLNT_STREAMFLAGS_LOOPBACK,
-		REFTIMES_PER_SEC, 0, format, nil,
+		REFTIMES_PER_SEC, 0, &format, nil,
 	); err != nil {
 		panic(err)
 	}
@@ -139,7 +138,7 @@ func main() {
 	defer captureClient.Release()
 
 	// 计算实际的采样时间
-	hnsActualDuration = uint64(REFTIMES_PER_SEC) * uint64(bufferFrameCount) / uint64(format.Format().SamplesPerSec())
+	hnsActualDuration = uint64(REFTIMES_PER_SEC) * uint64(bufferFrameCount) / uint64(format.Format.SamplesPerSec)
 
 	if err = audioClient.Start(); err != nil {
 		panic(err)
@@ -153,7 +152,7 @@ func main() {
 	wg.Add(1)
 
 	// start process
-	go processCapture(captureClient, format, hnsActualDuration, quit)
+	go processCapture(captureClient, &format, hnsActualDuration, quit)
 
 	<-sigChan
 	close(quit)
@@ -196,12 +195,12 @@ func processCapture(client *audioclient.IAudioCaptureClient, format *audioclient
 			// 可以在此按业务需求处理音频内容
 			// 因为此处判断了静音，所以如果卡在了这里，可以尝试播放一些音乐
 			if flags&audioclient.AUDCLNT_BUFFERFLAGS_SILENT == 0 &&
-				format.Format().BitsPerSample() == 32 &&
-				format.Format().FormatTag() == audioclient.WAVE_FORMAT_EXTENSIBLE &&
+				format.Format.BitsPerSample == 32 &&
+				format.Format.FormatTag == audioclient.WAVE_FORMAT_EXTENSIBLE &&
 				format.SubFormatTag() == audioclient.WAVE_FORMAT_IEEE_FLOAT {
-				for i := 0; i < int(numFramesAvailable/uint32(format.Format().BlockAlign()))/int(format.Format().Channels()); i++ {
-					for j := 0; j < int(format.Format().Channels()); j++ {
-						fmt.Printf("CH%d: %f\t", j, math.Float32frombits(binary.LittleEndian.Uint32(data[i*int(format.Format().Channels())*4:i*int(format.Format().Channels())*4+4])))
+				for i := 0; i < int(numFramesAvailable/uint32(format.Format.BlockAlign))/int(format.Format.Channels); i++ {
+					for j := 0; j < int(format.Format.Channels); j++ {
+						fmt.Printf("CH%d: %f\t", j, math.Float32frombits(binary.LittleEndian.Uint32(data[i*int(format.Format.Channels)*4:i*int(format.Format.Channels)*4+4])))
 					}
 					fmt.Println()
 				}
@@ -219,16 +218,16 @@ func processCapture(client *audioclient.IAudioCaptureClient, format *audioclient
 }
 
 func showWaveFormat(wf *audioclient.WAVEFORMATEXTENSIBLE) {
-	fmt.Println("FormatTag:\t", wf.Format().FormatTag())
-	fmt.Println("Channels:\t", wf.Format().Channels())
-	fmt.Println("SamplesPerSec:\t", wf.Format().SamplesPerSec())
-	fmt.Println("AvgBytesPerSec:\t", wf.Format().AvgBytesPerSec())
-	fmt.Println("BlockAlign:\t", wf.Format().BlockAlign())
-	fmt.Println("BitsPerSample:\t", wf.Format().BitsPerSample())
-	fmt.Println("CbSize:\t\t", wf.Format().CbSize())
-	if wf.Format().CbSize() == 22 {
-		fmt.Println("Samples:\t", wf.Samples())
-		fmt.Printf("ChannelMask:\t 0x%08X\n", wf.ChannelMask())
+	fmt.Println("FormatTag:\t", wf.Format.FormatTag)
+	fmt.Println("Channels:\t", wf.Format.Channels)
+	fmt.Println("SamplesPerSec:\t", wf.Format.SamplesPerSec)
+	fmt.Println("AvgBytesPerSec:\t", wf.Format.AvgBytesPerSec)
+	fmt.Println("BlockAlign:\t", wf.Format.BlockAlign)
+	fmt.Println("BitsPerSample:\t", wf.Format.BitsPerSample)
+	fmt.Println("CbSize:\t\t", wf.Format.CbSize)
+	if wf.Format.CbSize == 22 {
+		fmt.Println("Samples:\t", wf.Samples)
+		fmt.Printf("ChannelMask:\t 0x%08X\n", wf.ChannelMask)
 		fmt.Println("SubFormat:\t", wf.SubFormatTag())
 	}
 }
