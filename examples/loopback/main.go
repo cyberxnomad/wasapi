@@ -11,9 +11,9 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/xray-bit/wasapi/audioclient"
-	"github.com/xray-bit/wasapi/com"
-	"github.com/xray-bit/wasapi/mmdevice"
+	"github.com/cyberxnomad/wasapi/audioclient"
+	"github.com/cyberxnomad/wasapi/com"
+	"github.com/cyberxnomad/wasapi/mmdevice"
 	"golang.org/x/sys/windows"
 )
 
